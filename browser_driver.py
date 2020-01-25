@@ -25,7 +25,7 @@ browser = webdriver.Chrome(chrome_options=chrome_opt)
 def start_play(url, ip):
     # 地址栏输入 地址
     browser.get(url)
-    time.sleep(1)
+    time.sleep(2)
     browser.switch_to.window(browser.window_handles[0])
     # 点击按钮
     path = '//*[@id="bilibiliPlayer"]//video'
