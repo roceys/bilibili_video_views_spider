@@ -48,7 +48,11 @@ def one_ip_loop_play(ip):
 def loop_ip_play():
     ip_list = get_ip_pool_list()
     for ip in ip_list:
-        one_ip_loop_play(ip)
+        try:
+            one_ip_loop_play(ip)
+        except Exception as e:
+            print(e)
+            continue
     browser.quit()
 
 
