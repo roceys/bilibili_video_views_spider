@@ -1,3 +1,3 @@
 import browser_driver as bd
 
-bd.loop_play()
+bd.loop_ip_play()
