@@ -15,4 +15,6 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
 }
 
-SLEEP_TIME = 3
+SLEEP_TIME = 2
+THREAD_DELTA = 60
+ACT_PROCESS = False
