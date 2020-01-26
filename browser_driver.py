@@ -1,5 +1,7 @@
 import time
 from datetime import datetime
+from threading import Thread
+from multiprocessing import Process
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import settings
@@ -18,11 +20,8 @@ chrome_opt = Options()  # 创建参数设置对象.
 if settings.ACT_HEADLESS:
     set_headless()
 
-# 创建Chrome对象并传入设置信息.
-browser = webdriver.Chrome(chrome_options=chrome_opt)
 
-
-def start_play(url, ip):
+def start_play(browser, url, ip):
     # 地址栏输入 地址
     browser.get(url)
     time.sleep(2)
@@ -39,21 +38,35 @@ def start_play(url, ip):
 
 
 def one_ip_loop_play(ip):
+    # 创建Chrome对象并传入设置信息.
+    browser = webdriver.Chrome(chrome_options=chrome_opt)
     chrome_opt.add_argument('–proxy-server=http://{}'.format(ip))
     a_list = url_list.get_list()
     for url in a_list:
-        start_play(url, ip)
+        start_play(browser, url, ip)
 
 
 def loop_ip_play():
     ip_list = get_ip_pool_list()
-    for ip in ip_list:
+    for index, ip in enumerate(ip_list):
         try:
-            one_ip_loop_play(ip)
+            # 多线程
+            print('第{}个ip开始访问'.format(index + 1))
+            if settings.ACT_HEADLESS:
+                run_multy_process(ip)
+            else:
+                # 单线程
+                one_ip_loop_play(ip)
         except Exception as e:
             print(e)
             continue
-    browser.quit()
+
+
+def run_multy_process(ip):
+    t = Thread(target=one_ip_loop_play, args=(ip,))
+    t.daemon = True
+    time.sleep(settings.THREAD_DELTA)
+    t.start()
 
 
 if __name__ == '__main__':

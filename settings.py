@@ -1,7 +1,7 @@
 SPACE_ID = '10241912'
 MY_URL = 'https://api.bilibili.com/x/space/arc/search?mid={}&ps=30&tid=0&pn={}&keyword=&order=pubdate&jsonp=jsonp'.format(
     SPACE_ID, '{}')
-ACT_HEADLESS = True
+ACT_HEADLESS = False
 HEADERS = {
     'Accept': 'application/json, text/plain, */*',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -16,5 +16,5 @@ HEADERS = {
 }
 
 SLEEP_TIME = 2
-THREAD_DELTA = 60
-ACT_PROCESS = False
+THREAD_DELTA = 30
+ACT_PROCESS = True
