@@ -57,13 +57,14 @@ def loop_ip_play():
     ip_list = get_ip_pool_list()
     for index, ip in enumerate(ip_list):
         try:
-            # 多线程
             print('第{}个ip开始访问'.format(index + 1))
+            # 多线程
             if settings.ACT_PROCESS:
                 run_multy_process(ip)
             else:
                 # 单线程
                 one_ip_loop_play(ip)
+            print('第{}个ip访问结束'.format(index + 1))
         except Exception as e:
             print(e)
             continue
