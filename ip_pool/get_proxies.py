@@ -53,17 +53,12 @@ class ProxiesSpider:
 
         r_list_addr = [tup[0] + ':' + tup[1] for tup in result_list]
 
-        t_list = []
         for i in range(len(r_list_addr)):
             self.count += 1
             t = Thread(target=self.test_html, args=(r_list_addr[i],))
             t.daemon = True
-            time.sleep(0.1)
-            t_list.append(t)
+            time.sleep(0.5)
             t.start()
-
-        # for i in range(len(r_list_addr)):
-        #     self.test_html(r_list_addr[i])
 
     def test_html(self, addr):
         for i in range(3):
