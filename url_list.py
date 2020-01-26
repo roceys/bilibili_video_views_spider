@@ -17,7 +17,7 @@ def get_list():
             if not aid_list:
                 return urls
             urls = ['https://www.bilibili.com/video/av' + str(item) for item in aid_list]
-            print('播放列表抓取了{}页'.format(count))
+            # print('播放列表抓取了{}页'.format(count))
             count += 1
 
         except:
