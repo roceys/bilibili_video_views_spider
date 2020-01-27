@@ -5,6 +5,10 @@ import csv
 from threading import Thread
 import requests
 import fake_useragent
+from requests import ReadTimeout, ConnectTimeout
+from requests.exceptions import ProxyError
+from urllib3.exceptions import ConnectTimeoutError
+
 from ip_pool import api_settings
 from ip_pool.csv_helper import get_random_ip_in_pool
 
@@ -17,12 +21,13 @@ class ProxiesSpider:
 
     def get_html(self):
         for i in range(1, 3423):
+            print('开始一级爬取爬取,正在爬取第{}页'.format(i))
             url = self.url.format(i)
             headers = {'User-Agent': fake_useragent.UserAgent().random}
 
             try:
-                proxies = self.get_random_proxy()
                 if api_settings.USE_PROXY:
+                    proxies = self.get_random_proxy()
                     res = requests.get(url,
                                        headers=headers,
                                        timeout=api_settings.TIME_OUT,
@@ -34,12 +39,12 @@ class ProxiesSpider:
                                        timeout=api_settings.TIME_OUT,
                                        )
             except Exception as e:
+                raise e
                 print(e)
                 continue
             res.encoding = 'utf-8'
             html = res.content
             self.parse_html(html)
-            print('第{}页抓取完成,休眠2秒,抓取下一页.....'.format(i))
 
     @staticmethod
     def get_random_proxy():
@@ -51,39 +56,43 @@ class ProxiesSpider:
         return proxies
 
     def parse_html(self, html):
+        print('正在解析...')
         html = html.decode()
-        pattern = re.compile(r'<td>(\d+.\d+.\d+.\d+)</td>.*?<td>(\d+)</td>', re.S)
+        pattern = re.compile(r'<td>(\d+.\d+.\d+.\d+)</td>.*?<td>(\d+)</td>.*?<td>(HTTP.?)</td>', re.S)
         result_list = pattern.findall(html)
-        # [('121.226.53.201', '61234'), ('120.83.97.81', '9999')......]
-
-        r_list_addr = [tup[0] + ':' + tup[1] for tup in result_list]
-
-        for i in range(len(r_list_addr)):
+        list_addr = [tup[0] + ':' + tup[1] for tup in result_list]
+        list_type = [tup[2].lower() for tup in result_list]
+        for i in range(len(list_addr)):
             self.count += 1
-            t = Thread(target=self.test_html, args=(r_list_addr[i],))
+            t = Thread(target=self.test_html, args=(list_addr[i], list_type[i]))
             t.daemon = True
-            time.sleep(api_settings.THREAD_DELTA)
             t.start()
+            time.sleep(api_settings.THREAD_DELTA)
 
-    def test_html(self, addr):
+    def test_html(self, addr, type):
         for i in range(3):
+            proxies = {
+                type: addr,
+            }
             try:
-                # proxies = self.get_random_proxy()
+                # print(proxies)
                 in_time = time.time()
-                res = requests.get(self.url2,
-                                   # proxies=proxies,
-                                   timeout=api_settings.TIME_OUT)
+                res = requests.get(
+                    self.url2,
+                    timeout=api_settings.TIME_OUT,
+                    proxies=proxies)
                 out_time = time.time()
                 delta = out_time - in_time
-                # if delta > 2:
-                #     raise ValueError('响应时间过长')
                 res.encoding = 'utf-8'
-                print(res.text)
-                if "httpbin.org/get" in res.text:
-                    self.write_html(addr, delta)
 
-            except Exception as e:
-                print(addr + '第' + str(self.count) + "次连接失败")
+                if "httpbin.org/get" in res.text:
+                    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}连接成功'.format(addr))
+                    return self.write_html(addr, delta)
+                print(addr + '第' + str(i + 1) + "次连接失败,代理服务器响应内容错误")
+            except (ReadTimeout, ConnectTimeoutError, ConnectTimeout) as e:
+                print(str(proxies) + '第' + str(i + 1) + "次连接超时")
+            except ProxyError:
+                print(addr,'代理出错')
 
     @staticmethod
     def write_html(addr, delta):
@@ -93,12 +102,13 @@ class ProxiesSpider:
             reader = csv.reader(f)
             for item in reader:
                 if addr in item:
-                    print('>>>>>>>>>addr existed<<<<<<<<<<')
+                    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}地址重复'.format(addr))
                     return
         with open(api_settings.FILE_NAME, 'a') as f:
             writer = csv.writer(f)
             writer.writerow([addr, delta])
             f.flush()
+            print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}地址成功存储'.format(addr))
 
     def run(self):
         self.get_html()
