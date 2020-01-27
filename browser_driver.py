@@ -71,10 +71,9 @@ def loop_ip_play():
             print('第{}个ip>>>>{}开始访问'.format(index + 1, ip))
             # 多线程
             if settings.ACT_PROCESS:
-                t = Thread(target=one_ip_loop_play, args=(ip, index + 1))
+                t = Thread(target=one_ip_loop_play, args=(ip, index + 1),daemon=True)
                 t.start()
                 time.sleep(settings.THREAD_DELTA)
-                t.join(timeout=5)
             else:
                 # 单线程
                 one_ip_loop_play(ip, index)
