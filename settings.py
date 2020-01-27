@@ -15,8 +15,8 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
 }
 
-SLEEP_TIME = 2
-THREAD_DELTA = 180
+SLEEP_TIME = 10
+THREAD_DELTA = 480
 PLAY_ONE_VIDEO = False
 ONE_VIDEO_ADDR = 'https://www.bilibili.com/video/av20379071/'
 ACT_PROCESS = True

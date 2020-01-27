@@ -32,7 +32,7 @@ def start_play(browser, url, ip):
     locator = (By.XPATH, path)
     browser.switch_to.window(browser.window_handles[0])
     WebDriverWait(browser, 10).until(EC.element_to_be_clickable(locator))
-    time.sleep(1)
+    time.sleep(settings.SLEEP_TIME)
     # 点击按钮
     su = browser.find_element_by_xpath(path)
     su.click()
