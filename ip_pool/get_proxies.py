@@ -86,15 +86,15 @@ class ProxiesSpider:
 
                 if "httpbin.org/get" in res.text:
                     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}连接成功'.format(addr))
-                    return self.write_html(addr, delta)
+                    return self.write_html(addr, delta, type)
                 print(addr + '第' + str(i + 1) + "次连接失败,代理服务器响应内容错误")
             except (ReadTimeout, ConnectTimeoutError, ConnectTimeout) as e:
                 print(str(proxies) + '第' + str(i + 1) + "次连接超时")
             except ProxyError:
-                print(str(proxies),'代理出错')
+                print(str(proxies), '代理出错')
 
     @staticmethod
-    def write_html(addr, delta):
+    def write_html(addr, delta, type_):
         if not os.path.exists(api_settings.FILE_NAME):
             open(api_settings.FILE_NAME, 'w')
         with open(api_settings.FILE_NAME, 'r') as f:
@@ -105,7 +105,7 @@ class ProxiesSpider:
                     return
         with open(api_settings.FILE_NAME, 'a') as f:
             writer = csv.writer(f)
-            writer.writerow([addr, delta])
+            writer.writerow([addr, delta, type_])
             f.flush()
             print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}地址成功存储'.format(addr))
 
