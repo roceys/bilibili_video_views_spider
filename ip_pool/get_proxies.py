@@ -26,7 +26,7 @@ class ProxiesSpider:
             headers = {'User-Agent': fake_useragent.UserAgent().random}
 
             try:
-                if api_settings.USE_PROXY:
+                if api_settings.USE_PROXY_TO_XICI:
                     proxies = self.get_random_proxy()
                     res = requests.get(url,
                                        headers=headers,
