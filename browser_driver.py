@@ -48,9 +48,13 @@ def one_ip_loop_play(ip):
     # 创建Chrome对象并传入设置信息.
     browser = webdriver.Chrome(chrome_options=chrome_opt)
     chrome_opt.add_argument('–proxy-server=http://{}'.format(ip))
-    a_list = url_list.get_list()
-    for url in a_list:
-        start_play(browser, url, ip)
+    # 播放up主的单个视频或者所有视频
+    if settings.PLAY_ONE_VIDEO:
+        start_play(browser,settings.ONE_VIDEO_ADDR,ip)
+    else:
+        a_list = url_list.get_list()
+        for url in a_list:
+            start_play(browser, url, ip)
 
 
 def loop_ip_play():
