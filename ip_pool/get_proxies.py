@@ -39,7 +39,6 @@ class ProxiesSpider:
                                        timeout=api_settings.TIME_OUT,
                                        )
             except Exception as e:
-                raise e
                 print(e)
                 continue
             res.encoding = 'utf-8'
@@ -92,7 +91,7 @@ class ProxiesSpider:
             except (ReadTimeout, ConnectTimeoutError, ConnectTimeout) as e:
                 print(str(proxies) + '第' + str(i + 1) + "次连接超时")
             except ProxyError:
-                print(addr,'代理出错')
+                print(str(proxies),'代理出错')
 
     @staticmethod
     def write_html(addr, delta):

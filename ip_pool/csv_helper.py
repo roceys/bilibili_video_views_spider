@@ -13,7 +13,7 @@ def get_random_ip_in_pool():
 
 
 def get_ip_pool_list():
-    with open(api_settings.FILE_NAME, 'a') as f:
+    with open(api_settings.FILE_NAME, 'a+') as f:
         csv_obj = csv.reader(f)
         file_list = [item[0] for item in csv_obj]
         return file_list

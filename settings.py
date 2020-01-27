@@ -20,3 +20,4 @@ THREAD_DELTA = 480
 PLAY_ONE_VIDEO = False
 ONE_VIDEO_ADDR = 'https://www.bilibili.com/video/av20379071/'
 ACT_PROCESS = True
+
