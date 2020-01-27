@@ -1,11 +1,11 @@
 import csv
 import random
 
-from ip_pool import param
+from ip_pool import api_settings
 
 
 def get_random_ip_in_pool():
-    with open(param.FILE_NAME, 'r') as f:
+    with open(api_settings.FILE_NAME, 'r') as f:
         csv_obj = csv.reader(f)
         file_list = [item for item in csv_obj]
         addr = random.choice(file_list)[0]
@@ -13,7 +13,7 @@ def get_random_ip_in_pool():
 
 
 def get_ip_pool_list():
-    with open(param.FILE_NAME, 'r') as f:
+    with open(api_settings.FILE_NAME, 'r') as f:
         csv_obj = csv.reader(f)
         file_list = [item[0] for item in csv_obj]
         return file_list

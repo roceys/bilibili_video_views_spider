@@ -5,15 +5,14 @@ import csv
 from threading import Thread
 import requests
 import fake_useragent
-
-from ip_pool import param
+from ip_pool import api_settings
 from ip_pool.csv_helper import get_random_ip_in_pool
 
 
 class ProxiesSpider:
     def __init__(self):
-        self.url = param.URL_MAIN
-        self.url2 = param.URL_TEST
+        self.url = api_settings.URL_MAIN
+        self.url2 = api_settings.URL_TEST
         self.count = 0
 
     def get_html(self):
@@ -23,11 +22,17 @@ class ProxiesSpider:
 
             try:
                 proxies = self.get_random_proxy()
-                res = requests.get(url,
-                                   headers=headers,
-                                   timeout=param.TIME_OUT,
-                                   proxies=proxies
-                                   )
+                if api_settings.USE_PROXY:
+                    res = requests.get(url,
+                                       headers=headers,
+                                       timeout=api_settings.TIME_OUT,
+                                       proxies=proxies
+                                       )
+                else:
+                    res = requests.get(url,
+                                       headers=headers,
+                                       timeout=api_settings.TIME_OUT,
+                                       )
             except Exception as e:
                 print(e)
                 continue
@@ -57,7 +62,7 @@ class ProxiesSpider:
             self.count += 1
             t = Thread(target=self.test_html, args=(r_list_addr[i],))
             t.daemon = True
-            time.sleep(0.5)
+            time.sleep(api_settings.THREAD_DELTA)
             t.start()
 
     def test_html(self, addr):
@@ -67,7 +72,7 @@ class ProxiesSpider:
                 in_time = time.time()
                 res = requests.get(self.url2,
                                    # proxies=proxies,
-                                   timeout=param.TIME_OUT)
+                                   timeout=api_settings.TIME_OUT)
                 out_time = time.time()
                 delta = out_time - in_time
                 # if delta > 2:
@@ -82,15 +87,15 @@ class ProxiesSpider:
 
     @staticmethod
     def write_html(addr, delta):
-        if not os.path.exists(param.FILE_NAME):
-            open(param.FILE_NAME, 'w')
-        with open(param.FILE_NAME, 'r') as f:
+        if not os.path.exists(api_settings.FILE_NAME):
+            open(api_settings.FILE_NAME, 'w')
+        with open(api_settings.FILE_NAME, 'r') as f:
             reader = csv.reader(f)
             for item in reader:
                 if addr in item:
                     print('>>>>>>>>>addr existed<<<<<<<<<<')
                     return
-        with open(param.FILE_NAME, 'a') as f:
+        with open(api_settings.FILE_NAME, 'a') as f:
             writer = csv.writer(f)
             writer.writerow([addr, delta])
             f.flush()

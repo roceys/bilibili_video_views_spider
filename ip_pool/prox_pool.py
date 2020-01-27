@@ -2,7 +2,7 @@ import csv
 import random
 from multiprocessing import Process
 import requests
-import csv_helper
+from ip_pool.csv_helper import CsvHelper
 
 
 class Proxy:
@@ -22,8 +22,6 @@ class Proxy:
         for p in p_list:
             p.join()
 
-
-
     def _do_exam(self, addr):
         proxies = {
             'http': 'http:' + addr,
@@ -35,7 +33,7 @@ class Proxy:
                 res = requests.get(self.url, proxies=proxies, timeout=8)
                 res.encoding = 'utf-8'
                 # print(res.text)
-                print(addr,'>>>>>>>>>>>',res.status_code)
+                print(addr, '>>>>>>>>>>>', res.status_code)
                 if "https://httpbin.org/get" not in res.text:
                     self._delete_addr(addr)
                 break
@@ -44,7 +42,7 @@ class Proxy:
                 print('failed for {}'.format(i), )
                 if i == 4:
                     self._delete_addr(addr)
-                    print('addr has failed for 4 times,do delete >>>>>>',addr)
+                    print('addr has failed for 4 times,do delete >>>>>>', addr)
 
     @staticmethod
     def get_proxy():
@@ -62,7 +60,7 @@ class Proxy:
         return ip_list
 
     def _delete_addr(self, addr):
-        csv_helper.CsvHelper().delete_row(addr, 'proxies.csv')
+        CsvHelper().delete_row(addr, 'proxies.csv')
 
 
 if __name__ == '__main__':
@@ -70,4 +68,3 @@ if __name__ == '__main__':
     # p01.get_proxy()
     p01.examine_proxies()
     # p01._delete_addr('aa')
-
