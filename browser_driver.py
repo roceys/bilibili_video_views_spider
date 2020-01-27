@@ -1,7 +1,6 @@
 import time
 from datetime import datetime
 from threading import Thread
-from multiprocessing import Process
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
@@ -50,11 +49,12 @@ def one_ip_loop_play(ip):
     chrome_opt.add_argument('–proxy-server=http://{}'.format(ip))
     # 播放up主的单个视频或者所有视频
     if settings.PLAY_ONE_VIDEO:
-        start_play(browser,settings.ONE_VIDEO_ADDR,ip)
+        start_play(browser, settings.ONE_VIDEO_ADDR, ip)
     else:
         a_list = url_list.get_list()
         for url in a_list:
             start_play(browser, url, ip)
+    browser.quit()
 
 
 def loop_ip_play():
