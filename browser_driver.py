@@ -61,7 +61,8 @@ def one_ip_loop_play(ip, index):
         for url in a_list:
             start_play(browser, url, ip)
     print('第{}个ip,{}访问结束'.format(index, ip))
-    browser.quit()
+    if settings.ACT_PROCESS:
+        browser.quit()
 
 
 def loop_ip_play():
@@ -71,9 +72,7 @@ def loop_ip_play():
             print('第{}个ip>>>>{}开始访问'.format(index + 1, ip))
             # 多线程
             if settings.ACT_PROCESS:
-                t = Thread(target=one_ip_loop_play, args=(ip, index + 1),daemon=True)
-                t.start()
-                time.sleep(settings.THREAD_DELTA)
+                start_thread(index, ip)
             else:
                 # 单线程
                 one_ip_loop_play(ip, index)
@@ -82,6 +81,12 @@ def loop_ip_play():
             print('线程异常退出')
             print(e)
             continue
+
+
+def start_thread(index, ip):
+    t = Thread(target=one_ip_loop_play, args=(ip, index + 1), daemon=True)
+    t.start()
+    time.sleep(settings.THREAD_DELTA)
 
 
 if __name__ == '__main__':

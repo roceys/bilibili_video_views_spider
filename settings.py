@@ -16,7 +16,7 @@ HEADERS = {
 }
 
 SLEEP_TIME = 5
-THREAD_DELTA = 300
+THREAD_DELTA = 240
 PLAY_ONE_VIDEO = False
 ONE_VIDEO_ADDR = 'https://www.bilibili.com/video/av20379071/'
 ACT_PROCESS = True
