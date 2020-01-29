@@ -1,11 +1,14 @@
 import requests
 
+ip = '223.199.26.142:9999'
 proxies = {
-            'http':  '123.149.141.158:9999',
-            # 'https': '123.149.141.158:9999',
-        }
+    'http': 'http://' + ip,
+    'https': 'https://' + ip,
+}
 
-res = requests.get('https://httpbin.org/get', proxies=proxies, timeout=8)
+res = requests.get('https://httpbin.org/get',
+                   proxies=proxies,
+                   timeout=8)
 res.encoding = 'utf-8'
 
-print( '>>>>>>>>>>>', res)
+print('>>>>>>>>>>>', res.content.decode())

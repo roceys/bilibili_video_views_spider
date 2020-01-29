@@ -18,6 +18,9 @@ def get_ip_pool_list():
     with open(api_settings.FILE_NAME, 'a+') as f:
         f.seek(0, 0)
         csv_obj = csv.reader(f)
+        for item in csv_obj:
+            a = item
+            b = 1
         file_list = [item[0] for item in csv_obj]
         return file_list
 

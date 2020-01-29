@@ -47,10 +47,10 @@ class ProxiesSpider:
 
     @staticmethod
     def get_random_proxy():
-        ip = 'http://' + get_random_ip_in_pool()
+        ip = get_random_ip_in_pool()
         proxies = {
-            'http': ip,
-            'https': ip,
+            'http': 'http://' + ip,
+            'https': 'https://' + ip,
         }
         return proxies
 
@@ -71,7 +71,8 @@ class ProxiesSpider:
     def test_html(self, addr, type):
         for i in range(3):
             proxies = {
-                type: addr,
+                'http': 'http://' + addr,
+                'https': 'https://' + addr,
             }
             try:
                 # print(proxies)
@@ -84,9 +85,9 @@ class ProxiesSpider:
                 delta = out_time - in_time
                 res.encoding = 'utf-8'
 
-                if "httpbin.org/get" in res.text:
+                if addr in res.text:
                     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}连接成功'.format(addr))
-                    return self.write_html(addr, delta, type)
+                    return self.write_html(addr, delta, type ,res)
                 print(addr + '第' + str(i + 1) + "次连接失败,代理服务器响应内容错误")
             except (ReadTimeout, ConnectTimeoutError, ConnectTimeout) as e:
                 print(str(proxies) + '第' + str(i + 1) + "次连接超时")
@@ -94,7 +95,7 @@ class ProxiesSpider:
                 print(str(proxies), '代理出错')
 
     @staticmethod
-    def write_html(addr, delta, type_):
+    def write_html(addr, delta, type_,res):
         if not os.path.exists(api_settings.FILE_NAME):
             open(api_settings.FILE_NAME, 'w')
         with open(api_settings.FILE_NAME, 'r') as f:
@@ -105,7 +106,7 @@ class ProxiesSpider:
                     return
         with open(api_settings.FILE_NAME, 'a') as f:
             writer = csv.writer(f)
-            writer.writerow([addr, delta, type_])
+            writer.writerow([addr, delta, type_,res.content.decode()])
             f.flush()
             print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}地址成功存储'.format(addr))
 
