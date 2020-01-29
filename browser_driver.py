@@ -106,7 +106,6 @@ def loop_ip_play():
 
 
 def start_thread(list_ip):
-    return
     t_list = []
     for ip in list_ip:
         t = Thread(target=one_ip_loop_play, args=(ip,))
