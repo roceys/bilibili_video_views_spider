@@ -1,3 +1,4 @@
+import sys
 import threading
 import time
 from datetime import datetime
@@ -32,7 +33,7 @@ else:
     opt.add_argument('--log-level=fatal')  # 设置窗口大小, 窗口大小会有影响.
 
 
-def start_play(browser, url, ip):
+def start_play(browser, url, ip, count):
     try:
         # 地址栏输入 地址
         browser.get(url)
@@ -47,12 +48,12 @@ def start_play(browser, url, ip):
         time.sleep(settings.SLEEP_TIME)
         msg = url + '已完成播放       '
         with open('log.md', 'a') as file:
-            content = str(COUNT) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
+            content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
             file.write(content)
             file.write('\n')
             print(content)
     except Exception:
-        browser.quit()
+        sys.exit()
 
 
 def one_ip_loop_play(ip):
@@ -66,15 +67,16 @@ def one_ip_loop_play(ip):
     opt.add_argument('–proxy-server=http://{}'.format(ip))
     # 播放up主的单个视频或者所有视频
     if settings.PLAY_ONE_VIDEO:
-        start_play(browser, settings.ONE_VIDEO_ADDR, ip)
+        start_play(browser, settings.ONE_VIDEO_ADDR, ip, _count)
     else:
         a_list = url_list.get_list()
         for url in a_list:
-            start_play(browser, url, ip)
+            start_play(browser, url, ip, _count)
     print('第{}个ip,{}访问结束'.format(_count, ip))
 
     if settings.ACT_PROCESS:
         browser.quit()
+        sys.exit()
 
 
 def loop_ip_play():
