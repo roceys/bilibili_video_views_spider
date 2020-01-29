@@ -23,7 +23,7 @@ def get_ip_pool_list():
 
 
 def get_last_log():
-    with open(api_settings.FILE_NAME, 'a') as f:  # 打开文件
+    with open(get_log_abs_path(), 'rb') as f:  # 打开文件
         off = -50  # 设置偏移量
         while True:
             f.seek(off, 2)  # seek(off, 2)表示文件指针：从文件末尾(2)开始向前50个字符(-50)
@@ -37,11 +37,24 @@ def get_last_log():
     return last_line
 
 
-def get_abs_path():
+def get_last_row_number():
+    b_str = get_last_log().decode()
+    num = b_str.split('http')[0]
+    return num
+
+
+def get_ip_pool_abs_path():
     if 'ip_pool' in os.path.abspath(''):
         return os.path.abspath('proxies.csv')
     else:
         return os.path.abspath('ip_pool/proxies.csv')
+
+
+def get_log_abs_path():
+    if 'ip_pool' in os.path.abspath(''):
+        return os.path.abspath('../log.md')
+    else:
+        return os.path.abspath('log.md')
 
 
 def update_line_to_eof(count):
@@ -52,7 +65,7 @@ def update_line_to_eof(count):
         f.seek(0, 2)
         cw = csv.writer(f)
         cw.writerows(rows)
-    delete_rows(1,count)
+    delete_rows(1, count)
 
 
 def delete_rows(del_line, count):
@@ -91,4 +104,6 @@ def delete_rows(del_line, count):
 
 
 if __name__ == '__main__':
-    update_line_to_eof(10)
+    # update_line_to_eof(10)
+    a = get_last_row_number()
+    b = 1
