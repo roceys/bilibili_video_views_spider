@@ -51,7 +51,8 @@ def start_play(browser, url, ip, count):
             content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
             file.write(content)
             file.write('\n')
-            print(content)
+            if settings.PRINT_LOG:
+                print(content)
     except Exception:
         sys.exit()
 

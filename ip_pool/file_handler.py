@@ -26,7 +26,10 @@ def get_last_log():
     with open(get_log_abs_path(), 'rb') as f:  # 打开文件
         off = -50  # 设置偏移量
         while True:
-            f.seek(off, 2)  # seek(off, 2)表示文件指针：从文件末尾(2)开始向前50个字符(-50)
+            try:
+                f.seek(off, 2)  # seek(off, 2)表示文件指针：从文件末尾(2)开始向前50个字符(-50)\
+            except IOError:
+                return 0
             lines = f.readlines()  # 读取文件指针范围内所有行
             if len(lines) >= 2:  # 判断是否最后至少有两行，这样保证了最后一行是完整的
                 last_line = lines[-1]  # 取最后一行
@@ -43,8 +46,6 @@ def get_last_row_number():
     return num
 
 
-
-
 def get_log_abs_path():
     if 'ip_pool' in os.path.abspath(''):
         return os.path.abspath('../log.md')
@@ -57,6 +58,8 @@ def update_line_to_eof(count):
     with open(api_settings.FILE_NAME, 'r+') as f:  # 打开文件
         cr = csv.reader(f)
         rows = [cr.__next__() for _ in range(count)]
+        if not rows:
+            return
         f.seek(0, 2)
         cw = csv.writer(f)
         cw.writerows(rows)
@@ -99,6 +102,6 @@ def delete_rows(del_line, count):
 
 
 if __name__ == '__main__':
-    # update_line_to_eof(10)
+    # update_line_to_eof(0)
     a = get_last_row_number()
     b = 1

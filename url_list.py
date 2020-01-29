@@ -25,5 +25,4 @@ def get_list():
 
 
 if __name__ == '__main__':
-    url_list = get_list()
-    a = 1
+    ...
