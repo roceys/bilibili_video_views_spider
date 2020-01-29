@@ -43,11 +43,6 @@ def get_last_row_number():
     return num
 
 
-def get_ip_pool_abs_path():
-    if 'ip_pool' in os.path.abspath(''):
-        return os.path.abspath('proxies.csv')
-    else:
-        return os.path.abspath('ip_pool/proxies.csv')
 
 
 def get_log_abs_path():
