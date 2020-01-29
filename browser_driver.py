@@ -44,7 +44,6 @@ def start_play(ip, count):
         opt = get_opt()
         browser = webdriver.Firefox(firefox_options=opt)
         opt.add_argument('–proxy-server=http://{}'.format(ip))
-        a = opt
         # 地址栏输入 地址
         for url in url_list_:
             browser.get(url)

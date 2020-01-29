@@ -81,11 +81,15 @@ class ProxiesSpider:
                     self.url2,
                     timeout=api_settings.TIME_OUT,
                     proxies=proxies)
+                res = requests.get(
+                    self.url2,
+                    timeout=api_settings.TIME_OUT,
+                    proxies=proxies)
                 out_time = time.time()
                 delta = out_time - in_time
                 res.encoding = 'utf-8'
 
-                if addr in res.text:
+                if addr.split(':')[0] in res.text:
                     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}连接成功'.format(addr))
                     return self.write_html(addr, delta, type ,res)
                 print(addr + '第' + str(i + 1) + "次连接失败,代理服务器响应内容错误")
@@ -106,7 +110,7 @@ class ProxiesSpider:
                     return
         with open(api_settings.FILE_NAME, 'a') as f:
             writer = csv.writer(f)
-            writer.writerow([addr, delta, type_,res.content.decode()])
+            writer.writerow([addr, delta, type_,res.content])
             f.flush()
             print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}地址成功存储'.format(addr))
 

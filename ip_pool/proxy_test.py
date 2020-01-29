@@ -1,14 +1,22 @@
 import requests
+from ip_pool import api_settings
 
-ip = '223.199.26.142:9999'
-proxies = {
-    'http': 'http://' + ip,
-    'https': 'https://' + ip,
-}
+with open(api_settings.FILE_NAME,'r') as f:
+    # ip_list = [item.split(',')[0] for item in f.readlines()]
+    ip_list = ['111.72.25.96:9999']
 
-res = requests.get('https://httpbin.org/get',
-                   proxies=proxies,
-                   timeout=8)
-res.encoding = 'utf-8'
+    for ip in ip_list:
+        try:
+            proxies = {
+                'http': 'http://' + ip,
+                'https': 'https://' + ip,
+            }
 
-print('>>>>>>>>>>>', res.content.decode())
+            res = requests.get('https://httpbin.org/get',
+                               proxies=proxies,
+                               timeout=10)
+            res.encoding = 'utf-8'
+            print('>>>>>>>>>>>', res.content.decode())
+        except Exception as e:
+            print(e)
+
