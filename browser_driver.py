@@ -3,7 +3,6 @@ import threading
 import time
 from datetime import datetime
 from threading import Thread
-from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -26,18 +25,26 @@ def set_headless():
     return opt_
 
 
-if settings.ACT_HEADLESS:
-    opt = set_headless()
-else:
-    opt = Options()
-    opt.add_argument('--log-level=fatal')  # 设置窗口大小, 窗口大小会有影响.
+def get_opt():
+    if settings.ACT_HEADLESS:
+        opt = set_headless()
+    else:
+        opt = Options()
+        opt.add_argument('--log-level=fatal')  # 设置窗口大小, 窗口大小会有影响.
+    return opt
 
 
 def start_play(ip, count):
     try:
-        url_list_ = url_list.get_list()
+        if settings.PLAY_ONE_VIDEO:
+            url_list_ = [settings.ONE_VIDEO_ADDR]
+        else:
+            url_list_ = url_list.get_list()
+        from selenium import webdriver
+        opt = get_opt()
         browser = webdriver.Firefox(firefox_options=opt)
         opt.add_argument('–proxy-server=http://{}'.format(ip))
+        a = opt
         # 地址栏输入 地址
         for url in url_list_:
             browser.get(url)
@@ -70,10 +77,7 @@ def one_ip_loop_play(ip):
         _count = COUNT
     print('第{}个ip>>>>{}开始访问'.format(_count, ip))
     # 播放up主的单个视频或者所有视频
-    if settings.PLAY_ONE_VIDEO:
-        start_play(settings.ONE_VIDEO_ADDR, ip)
-    else:
-        start_play(ip, _count)
+    start_play(ip, _count)
     print('第{}个ip,{}访问结束'.format(_count, ip))
 
     if settings.ACT_PROCESS:
@@ -84,7 +88,7 @@ def loop_ip_play():
     """循环播放"""
     # 修改ip队列
     num = get_last_row_number()
-    update_line_to_eof(int(num))
+    update_line_to_eof(int(num) + settings.MAX_THREAD)  # 将日志用过的ip'过量'移至文档末尾
     ip_list = get_ip_pool_list()
     if settings.ACT_PROCESS:
         # 多线程
