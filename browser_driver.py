@@ -33,27 +33,32 @@ else:
     opt.add_argument('--log-level=fatal')  # 设置窗口大小, 窗口大小会有影响.
 
 
-def start_play(browser, url, ip, count):
+def start_play(ip, count):
     try:
+        url_list_ = url_list.get_list()
+        browser = webdriver.Firefox(firefox_options=opt)
+        opt.add_argument('–proxy-server=http://{}'.format(ip))
         # 地址栏输入 地址
-        browser.get(url)
-        path = '''//*[@id="bilibiliPlayer"]//button[@class='bilibili-player-iconfont bilibili-player-iconfont-start']'''
-        locator = (By.XPATH, path)
-        browser.switch_to.window(browser.window_handles[0])
-        WebDriverWait(browser, 10).until(EC.element_to_be_clickable(locator))
-        time.sleep(settings.SLEEP_TIME)
-        # 点击按钮
-        su = browser.find_element_by_xpath(path)
-        su.click()
-        time.sleep(settings.SLEEP_TIME)
-        msg = url + '已完成播放       '
-        with open('log.md', 'a') as file:
-            content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
-            file.write(content)
-            file.write('\n')
-            if settings.PRINT_LOG:
-                print(content)
-    except Exception:
+        for url in url_list_:
+            browser.get(url)
+            path = '''//*[@id="bilibiliPlayer"]//button[@class='bilibili-player-iconfont bilibili-player-iconfont-start']'''
+            locator = (By.XPATH, path)
+            browser.switch_to.window(browser.window_handles[0])
+            WebDriverWait(browser, 10).until(EC.element_to_be_clickable(locator))
+            time.sleep(settings.SLEEP_TIME)
+            # 点击按钮
+            su = browser.find_element_by_xpath(path)
+            su.click()
+            time.sleep(settings.SLEEP_TIME)
+            msg = url + '已完成播放       '
+            with open('log.md', 'a') as file:
+                content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
+                file.write(content)
+                file.write('\n')
+                if settings.PRINT_LOG:
+                    print(content)
+        browser.quit()
+    except:
         sys.exit()
 
 
@@ -64,19 +69,14 @@ def one_ip_loop_play(ip):
         COUNT += 1
         _count = COUNT
     print('第{}个ip>>>>{}开始访问'.format(_count, ip))
-    browser = webdriver.Firefox(firefox_options=opt)
-    opt.add_argument('–proxy-server=http://{}'.format(ip))
     # 播放up主的单个视频或者所有视频
     if settings.PLAY_ONE_VIDEO:
-        start_play(browser, settings.ONE_VIDEO_ADDR, ip, _count)
+        start_play(settings.ONE_VIDEO_ADDR, ip)
     else:
-        a_list = url_list.get_list()
-        for url in a_list:
-            start_play(browser, url, ip, _count)
+        start_play(ip, _count)
     print('第{}个ip,{}访问结束'.format(_count, ip))
 
     if settings.ACT_PROCESS:
-        browser.quit()
         sys.exit()
 
 
@@ -102,10 +102,13 @@ def loop_ip_play():
 
 
 def start_thread(list_ip):
+    t_list = []
     for ip in list_ip:
-        t = Thread(target=one_ip_loop_play, args=(ip,), daemon=True)
+        t = Thread(target=one_ip_loop_play, args=(ip,))
         t.start()
-    time.sleep(settings.THREAD_DELTA)
+        t_list.append(t)
+    for t in t_list:
+        t.join()
 
 
 if __name__ == '__main__':
