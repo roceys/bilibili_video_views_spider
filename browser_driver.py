@@ -92,9 +92,9 @@ def loop_ip_play():
     ip_list = get_ip_pool_list()
     if settings.ACT_PROCESS:
         # 多线程
+        iter_obj = ip_list.__iter__()
         while True:
             try:
-                iter_obj = ip_list.__iter__()
                 new_list = [iter_obj.__next__() for _ in range(settings.MAX_THREAD)]
                 start_thread(new_list)
             except StopIteration:
@@ -106,6 +106,7 @@ def loop_ip_play():
 
 
 def start_thread(list_ip):
+    return
     t_list = []
     for ip in list_ip:
         t = Thread(target=one_ip_loop_play, args=(ip,))
