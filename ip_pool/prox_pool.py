@@ -2,7 +2,7 @@ import csv
 import random
 from multiprocessing import Process
 import requests
-from ip_pool.csv_helper import CsvHelper
+from ip_pool.file_handler import CsvHelper
 
 
 class Proxy:

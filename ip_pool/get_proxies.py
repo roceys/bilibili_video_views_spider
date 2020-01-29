@@ -10,7 +10,7 @@ from requests.exceptions import ProxyError
 from urllib3.exceptions import ConnectTimeoutError
 
 from ip_pool import api_settings
-from ip_pool.csv_helper import get_random_ip_in_pool
+from ip_pool.file_handler import get_random_ip_in_pool
 
 
 class ProxiesSpider:
