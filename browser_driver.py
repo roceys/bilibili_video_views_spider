@@ -8,7 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 import settings
 import url_list
-from ip_pool.file_handler import get_ip_pool_list
+from ip_pool.file_handler import get_ip_pool_list, get_last_row_number, update_line_to_eof
 from selenium.webdriver.support import expected_conditions as EC
 
 COUNT = 0
@@ -78,8 +78,11 @@ def one_ip_loop_play(ip):
 
 
 def loop_ip_play():
+    """循环播放"""
+    # 修改ip队列
+    num = get_last_row_number()
+    update_line_to_eof(int(num))
     ip_list = get_ip_pool_list()
-
     if settings.ACT_PROCESS:
         # 多线程
         while True:
