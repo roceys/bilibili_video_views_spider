@@ -68,7 +68,7 @@ class ProxiesSpider:
             t.start()
             time.sleep(api_settings.THREAD_DELTA)
 
-    def test_html(self, addr, type):
+    def test_html(self, addr, type_=None):
         for i in range(3):
             proxies = {
                 'http': 'http://' + addr,
@@ -81,17 +81,13 @@ class ProxiesSpider:
                     self.url2,
                     timeout=api_settings.TIME_OUT,
                     proxies=proxies)
-                res = requests.get(
-                    self.url2,
-                    timeout=api_settings.TIME_OUT,
-                    proxies=proxies)
                 out_time = time.time()
                 delta = out_time - in_time
                 res.encoding = 'utf-8'
 
                 if addr.split(':')[0] in res.text:
                     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}连接成功'.format(addr))
-                    return self.write_html(addr, delta, type ,res)
+                    return self.write_html(addr, delta, type_, res)
                 print(addr + '第' + str(i + 1) + "次连接失败,代理服务器响应内容错误")
             except (ReadTimeout, ConnectTimeoutError, ConnectTimeout) as e:
                 print(str(proxies) + '第' + str(i + 1) + "次连接超时")
@@ -99,7 +95,7 @@ class ProxiesSpider:
                 print(str(proxies), '代理出错')
 
     @staticmethod
-    def write_html(addr, delta, type_,res):
+    def write_html(addr, delta, type_, res):
         if not os.path.exists(api_settings.FILE_NAME):
             open(api_settings.FILE_NAME, 'w')
         with open(api_settings.FILE_NAME, 'r') as f:
@@ -110,7 +106,7 @@ class ProxiesSpider:
                     return
         with open(api_settings.FILE_NAME, 'a') as f:
             writer = csv.writer(f)
-            writer.writerow([addr, delta, type_,res.content])
+            writer.writerow([addr, delta, type_, res.content])
             f.flush()
             print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{}地址成功存储'.format(addr))
 

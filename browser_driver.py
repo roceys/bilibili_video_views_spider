@@ -3,35 +3,37 @@ import threading
 import time
 from datetime import datetime
 from threading import Thread
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.by import By
 import settings
 import url_list
 from ip_pool.file_handler import get_ip_pool_list, get_last_row_number, update_line_to_eof
-from selenium.webdriver.support import expected_conditions as EC
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
+
+#get直接返回，不再等待界面加载完成
+desired_capabilities = DesiredCapabilities.CHROME
+desired_capabilities["pageLoadStrategy"] = "none"
 COUNT = 0
 thread_lock = threading.Lock()
 
 
-def set_headless():
-    opt_ = Options()  # 创建参数设置对象.
+def set_headless(opt_):
+
     opt_.add_argument('--headless')  # 无界面化.
     opt_.add_argument('--disable-gpu')  # 配合上面的无界面化.
-    # chrome_opt.add_argument('--window-size=1366,768')  # 设置窗口大小, 窗口大小会有影响.
-    opt_.add_argument('--window-size=100,100')  # 设置窗口大小, 窗口大小会有影响.
-    opt_.add_argument('--log-level=fatal')  # 设置窗口大小, 窗口大小会有影响.
     return opt_
 
 
 def get_opt():
+    opt_ = Options()  # 创建参数设置对象.
+    opt_.add_argument('--window-size=250,600')  # 设置窗口大小, 窗口大小会有影响.
+    opt_.add_argument('--log-level=3')  # 设置窗口大小, 窗口大小会有影响.
     if settings.ACT_HEADLESS:
-        opt = set_headless()
-    else:
-        opt = Options()
-        opt.add_argument('--log-level=fatal')  # 设置窗口大小, 窗口大小会有影响.
-    return opt
+        set_headless(opt_)
+
+    return opt_
 
 
 def start_play(ip, count):
@@ -40,30 +42,34 @@ def start_play(ip, count):
             url_list_ = [settings.ONE_VIDEO_ADDR]
         else:
             url_list_ = url_list.get_list()
-        from selenium import webdriver
+
         opt = get_opt()
-        browser = webdriver.Firefox(firefox_options=opt)
-        opt.add_argument('–proxy-server=http://{}'.format(ip))
-        # 地址栏输入 地址
-        for url in url_list_:
-            browser.get(url)
-            path = '''//*[@id="bilibiliPlayer"]//button[@class='bilibili-player-iconfont bilibili-player-iconfont-start']'''
-            locator = (By.XPATH, path)
-            browser.switch_to.window(browser.window_handles[0])
-            WebDriverWait(browser, 10).until(EC.element_to_be_clickable(locator))
-            time.sleep(settings.SLEEP_TIME)
-            # 点击按钮
-            su = browser.find_element_by_xpath(path)
-            su.click()
-            time.sleep(settings.SLEEP_TIME)
-            msg = url + '已完成播放       '
-            with open('log.md', 'a') as file:
-                content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
-                file.write(content)
-                file.write('\n')
-                if settings.PRINT_LOG:
-                    print(content)
-        browser.quit()
+        opt.add_argument('--proxy-server=http://%s' % ip)
+
+        with webdriver.Chrome(chrome_options=opt) as browser:
+            # 地址栏输入 地址
+            for url in url_list_:
+                browser.get(url)
+                browser.switch_to.window(browser.window_handles[0])
+
+                path = '''//*[@id="bilibiliPlayer"]//button[@class='bilibili-player-iconfont bilibili-player-iconfont-start']'''
+                try:
+                    WebDriverWait(browser, settings.WAIT_TIME).until(lambda browser: browser.find_element_by_xpath(path))
+                    # 点击按钮
+                    su = browser.find_element_by_xpath(path)
+                    su.click()
+                except:
+                    print('No.{}加载缓慢,切换中....'.format(str(count)+'--'+ip))
+                    continue
+                time.sleep(settings.PLAY_DURATION)
+                msg = url + '已完成播放       '
+                with open('log.md', 'a') as file:
+                    content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
+                    file.write('\n')
+                    file.write(content)
+                    if settings.PRINT_LOG:
+                        print(content)
+
     except:
         sys.exit()
 
@@ -86,8 +92,8 @@ def one_ip_loop_play(ip):
 def loop_ip_play():
     """循环播放"""
     # 修改ip队列
-    num = get_last_row_number()
-    update_line_to_eof(int(num) + settings.MAX_THREAD)  # 将日志用过的ip'过量'移至文档末尾
+    # num = get_last_row_number()
+    # update_line_to_eof(int(num) + settings.MAX_THREAD)  # 将日志用过的ip'过量'移至文档末尾
     ip_list = get_ip_pool_list()
     if settings.ACT_PROCESS:
         # 多线程
