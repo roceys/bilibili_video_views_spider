@@ -29,7 +29,7 @@ def get_last_log():
             try:
                 f.seek(off, 2)  # seek(off, 2)表示文件指针：从文件末尾(2)开始向前50个字符(-50)\
             except IOError:
-                return 0
+                return b'0'
             lines = f.readlines()  # 读取文件指针范围内所有行
             if len(lines) >= 2:  # 判断是否最后至少有两行，这样保证了最后一行是完整的
                 last_line = lines[-1]  # 取最后一行
