@@ -60,7 +60,7 @@ def start_play(ip, count):
                 try:
                     click_play_button(browser, path)
                 except:
-                    print('No.{}加载缓慢,切换中....'.format(str(count) + '--' + ip))
+                    print('No.{},切换中....'.format(str(count) + '--' + ip))
                     continue
                 time.sleep(settings.PLAY_DURATION)
                 add_log(count, ip, url)
