@@ -13,12 +13,14 @@ HEADERS = {
     'Referer': 'https://space.bilibili.com/10241912/video',
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
 }
-ONE_VIDEO_ADDR = 'https://www.bilibili.com/video/av20379071/'
-PLAY_ONE_VIDEO = True
+# ONE_VIDEO_ADDR = 'https://www.bilibili.com/video/av20379071/'
+ONE_VIDEO_ADDR = 'https://www.bilibili.com/video/av25107072/'
+ACT_PROXY = False
+PLAY_ONE_VIDEO = False
 WAIT_TIME = 20
 PLAY_DURATION = 30
 ACT_HEADLESS = False
 PRINT_LOG = True
-MAX_THREAD = 4
+MAX_THREAD = 1
 ACT_PROCESS = True
 

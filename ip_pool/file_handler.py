@@ -2,6 +2,7 @@ import csv
 import os
 import random
 
+import settings
 from ip_pool import api_settings
 
 
@@ -15,6 +16,8 @@ def get_random_ip_in_pool():
 
 
 def get_ip_pool_list():
+    if not settings.ACT_PROXY:
+        return ['127.0.0.1' for _ in range(100)]
     with open(api_settings.FILE_NAME, 'a+') as f:
         f.seek(0, 0)
         csv_obj = csv.reader(f)

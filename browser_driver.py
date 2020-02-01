@@ -13,8 +13,7 @@ from ip_pool.file_handler import get_ip_pool_list, get_last_row_number, update_l
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-
-#get直接返回，不再等待界面加载完成
+# get直接返回，不再等待界面加载完成
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 COUNT = 0
@@ -22,13 +21,12 @@ thread_lock = threading.Lock()
 
 
 def set_headless(opt_):
-
     opt_.add_argument('--headless')  # 无界面化.
     opt_.add_argument('--disable-gpu')  # 配合上面的无界面化.
     return opt_
 
 
-def get_opt():
+def get_opt(ip):
     opt_ = Options()  # 创建参数设置对象.
     opt_.add_argument('--window-size=250,600')  # 设置窗口大小, 窗口大小会有影响.
     opt_.add_argument('--log-level=3')  # 设置窗口大小, 窗口大小会有影响.
@@ -39,18 +37,16 @@ def get_opt():
 
     if settings.ACT_HEADLESS:
         set_headless(opt_)
+    if settings.ACT_PROXY:
+        opt_.add_argument('--proxy-server=http://%s' % ip)
 
     return opt_
 
 
 def start_play(ip, count):
     try:
-        if settings.PLAY_ONE_VIDEO:
-            url_list_ = [settings.ONE_VIDEO_ADDR]
-        else:
-            url_list_ = url_list.get_list()
-        opt = get_opt()
-        opt.add_argument('--proxy-server=http://%s' % ip)
+        url_list_ = get_url_list()
+        opt = get_opt(ip)
 
         with webdriver.Chrome(chrome_options=opt) as browser:
             # 地址栏输入 地址
@@ -62,25 +58,41 @@ def start_play(ip, count):
 
                 path = '''//*[@id="bilibiliPlayer"]//button[@class='bilibili-player-iconfont bilibili-player-iconfont-start']'''
                 try:
-                    WebDriverWait(browser, settings.WAIT_TIME).until(lambda browser: browser.find_element_by_xpath(path))
-                    # 点击按钮
-                    su = browser.find_element_by_xpath(path)
-                    browser.delete_all_cookies()
-                    su.click()
+                    click_play_button(browser, path)
                 except:
-                    print('No.{}加载缓慢,切换中....'.format(str(count)+'--'+ip))
+                    print('No.{}加载缓慢,切换中....'.format(str(count) + '--' + ip))
                     continue
                 time.sleep(settings.PLAY_DURATION)
-                msg = url + '已完成播放       '
-                with open('log.md', 'a') as file:
-                    content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
-                    file.write('\n')
-                    file.write(content)
-                    if settings.PRINT_LOG:
-                        print(content)
+                add_log(count, ip, url)
 
     except:
         sys.exit()
+
+
+def add_log(count, ip, url):
+    msg = url + '已完成播放       '
+    with open('log.md', 'a') as file:
+        content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
+        file.write('\n')
+        file.write(content)
+        if settings.PRINT_LOG:
+            print(content)
+
+
+def click_play_button(browser, path):
+    WebDriverWait(browser, settings.WAIT_TIME).until(lambda browser: browser.find_element_by_xpath(path))
+    # 点击按钮
+    su = browser.find_element_by_xpath(path)
+    browser.delete_all_cookies()
+    su.click()
+
+
+def get_url_list():
+    if settings.PLAY_ONE_VIDEO:
+        url_list_ = [settings.ONE_VIDEO_ADDR]
+    else:
+        url_list_ = url_list.get_list()
+    return url_list_
 
 
 def one_ip_loop_play(ip):
