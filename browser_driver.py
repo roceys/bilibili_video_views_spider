@@ -3,6 +3,8 @@ import threading
 import time
 from datetime import datetime
 from threading import Thread
+
+import fake_useragent
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 import settings
@@ -30,6 +32,11 @@ def get_opt():
     opt_ = Options()  # 创建参数设置对象.
     opt_.add_argument('--window-size=250,600')  # 设置窗口大小, 窗口大小会有影响.
     opt_.add_argument('--log-level=3')  # 设置窗口大小, 窗口大小会有影响.
+    ua = fake_useragent.UserAgent().random
+    opt_.add_argument(f'user-agent={ua}')
+    prefs = {"profile.managed_default_content_settings.images": 2}
+    opt_.add_experimental_option("prefs", prefs)
+
     if settings.ACT_HEADLESS:
         set_headless(opt_)
 
@@ -42,13 +49,14 @@ def start_play(ip, count):
             url_list_ = [settings.ONE_VIDEO_ADDR]
         else:
             url_list_ = url_list.get_list()
-
         opt = get_opt()
         opt.add_argument('--proxy-server=http://%s' % ip)
 
         with webdriver.Chrome(chrome_options=opt) as browser:
             # 地址栏输入 地址
             for url in url_list_:
+
+                # browser.get('http://httpbin.org/get')
                 browser.get(url)
                 browser.switch_to.window(browser.window_handles[0])
 
@@ -57,6 +65,7 @@ def start_play(ip, count):
                     WebDriverWait(browser, settings.WAIT_TIME).until(lambda browser: browser.find_element_by_xpath(path))
                     # 点击按钮
                     su = browser.find_element_by_xpath(path)
+                    browser.delete_all_cookies()
                     su.click()
                 except:
                     print('No.{}加载缓慢,切换中....'.format(str(count)+'--'+ip))

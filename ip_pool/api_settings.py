@@ -2,7 +2,7 @@ FILE_NAME = __file__.replace('api_settings.py', 'proxies.csv')
 TIME_OUT = 2
 URL_MAIN = 'https://www.xicidaili.com/nn/{}.html'
 URL_TEST = 'http://httpbin.org/get'
-XIGUA_URL = 'http://api3.xiguadaili.com/ip/?tid=556221803609687&num=80'
+XIGUA_URL = 'http://api3.xiguadaili.com/ip/?tid=556221803609687&num=200'
 XG_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',

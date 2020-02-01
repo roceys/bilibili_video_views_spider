@@ -1,9 +1,7 @@
 import os
 from threading import Thread
-
 import requests
 from ip_pool import api_settings
-import settings
 from ip_pool.get_proxies import ProxiesSpider
 
 res = requests.get(api_settings.XIGUA_URL,headers = api_settings.XG_HEADERS)
