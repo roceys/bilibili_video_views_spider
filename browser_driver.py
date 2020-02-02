@@ -62,14 +62,14 @@ def start_play(ip, count):
                 add_log(count, ip, url)
 
     except:
-        raise
         sys.exit()
 
 
-def add_log(count, ip, url):
+def add_log(count, ip, url, *args):
     msg = url + '已完成播放       '
     with open('log.md', 'a') as file:
         content = str(count) + msg + str(datetime.now()).split('.')[0] + '       ip地址{}'.format(ip)
+        content += str(args)
         file.write('\n')
         file.write(content)
         if settings.PRINT_LOG:

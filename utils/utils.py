@@ -21,3 +21,4 @@ def get_bilibili_play_times(url):
     result = re.findall(re_str, res.text)
     times = result[0] if result else None
     return times
+
