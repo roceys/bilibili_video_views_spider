@@ -3,19 +3,16 @@ import threading
 import time
 from datetime import datetime
 from threading import Thread
-
-import fake_useragent
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 import settings
 import url_list
 from ip_pool.file_handler import get_ip_pool_list, get_last_row_number, update_line_to_eof
 from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 # get直接返回，不再等待界面加载完成
-desired_capabilities = DesiredCapabilities.CHROME
-desired_capabilities["pageLoadStrategy"] = "none"
+# desired_capabilities = DesiredCapabilities.CHROME
+# desired_capabilities["pageLoadStrategy"] = "none"
 COUNT = 0
 thread_lock = threading.Lock()
 
@@ -30,10 +27,10 @@ def get_opt(ip):
     opt_ = Options()  # 创建参数设置对象.
     opt_.add_argument('--window-size=250,600')  # 设置窗口大小, 窗口大小会有影响.
     opt_.add_argument('--log-level=3')  # 设置窗口大小, 窗口大小会有影响.
-    ua = fake_useragent.UserAgent().random
-    opt_.add_argument(f'user-agent={ua}')
-    prefs = {"profile.managed_default_content_settings.images": 2}
-    opt_.add_experimental_option("prefs", prefs)
+    # ua = fake_useragent.UserAgent().random
+    # opt_.add_argument(f'user-agent={ua}')
+    # prefs = {"profile.managed_default_content_settings.images": 2}
+    # opt_.add_experimental_option("prefs", prefs)
 
     if settings.ACT_HEADLESS:
         set_headless(opt_)
@@ -51,7 +48,6 @@ def start_play(ip, count):
         with webdriver.Chrome(chrome_options=opt) as browser:
             # 地址栏输入 地址
             for url in url_list_:
-
                 # browser.get('http://httpbin.org/get')
                 browser.get(url)
                 browser.switch_to.window(browser.window_handles[0])
@@ -66,6 +62,7 @@ def start_play(ip, count):
                 add_log(count, ip, url)
 
     except:
+        raise
         sys.exit()
 
 
@@ -83,7 +80,6 @@ def click_play_button(browser, path):
     WebDriverWait(browser, settings.WAIT_TIME).until(lambda browser: browser.find_element_by_xpath(path))
     # 点击按钮
     su = browser.find_element_by_xpath(path)
-    browser.delete_all_cookies()
     su.click()
 
 
