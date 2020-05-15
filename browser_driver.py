@@ -4,7 +4,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from conf import *
 from selenium import webdriver
-from logger import log
+
+from spider.proxy_model import ProxyStack
+from utils.logger import log
 
 
 class ChromePlayer:
@@ -32,7 +34,7 @@ class ChromePlayer:
         """
         try:
             if proxy:
-                assert self.proxy_pool,'please set proxy pool'
+                assert self.proxy_pool, 'please set proxy pool'
                 self.opt.add_argument('--proxy-server=%s' % self.proxy_pool.pop())
             with webdriver.Chrome(chrome_options=self.opt) as browser:
                 # 地址栏输入 地址
@@ -70,4 +72,6 @@ class ChromePlayer:
 
 
 if __name__ == '__main__':
+    proxy_pool = ProxyStack()
+    ip = proxy_pool.pop()
     ChromePlayer().loop_play()

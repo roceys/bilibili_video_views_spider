@@ -4,7 +4,7 @@
 一个代理池 https://github.com/incinya/proxies
 
 # 爬坑日志
-提升selenium速度
+##提升selenium速度
 driver.get()这个操作，改成不阻塞的
 
 from selenium import webdriver
@@ -13,4 +13,4 @@ desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 driver = webdriver.Chrome(executable_path='chromedriver.exe')
 
-
+## 优化了browser_driver 结构
