@@ -3,8 +3,8 @@ from threading import Thread
 from selenium.webdriver.support.wait import WebDriverWait
 from conf import *
 from selenium import webdriver
-
 from spider.proxy_model import ProxyStack
+from pools.url_list import IPPool
 from utils.logger import log
 
 
@@ -72,4 +72,5 @@ class ChromePlayer:
 
 if __name__ == '__main__':
     proxy_pool1 = ProxyStack()
-    ip_pool1 = ...
+    ip_pool1 = IPPool()
+    ChromePlayer().loop_play(ip_pool1, proxy_pool1)
