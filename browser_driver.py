@@ -1,6 +1,5 @@
 import time
 from threading import Thread
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from conf import *
 from selenium import webdriver
@@ -14,7 +13,7 @@ class ChromePlayer:
     task_over = 0
 
     def __init__(self, head_less=ACT_HEADLESS):
-        opt = Options()
+        opt = webdriver.ChromeOptions()
         opt.add_argument('--window-size=250,600')  # 窗口大小会有影响.
         opt.add_argument('--log-level=3')
         if head_less:
@@ -72,6 +71,5 @@ class ChromePlayer:
 
 
 if __name__ == '__main__':
-    proxy_pool = ProxyStack()
-    ip = proxy_pool.pop()
-    ChromePlayer().loop_play()
+    proxy_pool1 = ProxyStack()
+    ip_pool1 = ...

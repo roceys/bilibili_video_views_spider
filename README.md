@@ -1,7 +1,8 @@
 # bilibili_video_views_spider
 自动播放视频，配合换ip，cookie等可以刷一点点播放量
 
-一个代理池 https://github.com/incinya/proxies
+spider代理池是必要的 https://github.com/incinya/proxies
+使用它可能要改下redis配置
 
 # 爬坑日志
 ##提升selenium速度
