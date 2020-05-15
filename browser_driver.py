@@ -1,3 +1,6 @@
+import sys
+
+PATH = sys.path.append('proxies')
 import time
 from threading import Thread
 from selenium.webdriver.support.wait import WebDriverWait

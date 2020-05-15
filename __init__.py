@@ -1,3 +1,3 @@
-import os
+import sys
 
-root_path = os.getcwd()
+PATH = sys.path.append('proxies')

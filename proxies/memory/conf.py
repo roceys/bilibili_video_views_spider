@@ -1,0 +1,5 @@
+# redis
+DB = 2
+PASSWORD = 123456
+HOST = '10.168.1.245'
+PORT = 6379
